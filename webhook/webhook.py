@@ -30,7 +30,7 @@ def post_data():
     if signature != token:
         return "token认证无效", 401
     # 运行shell脚本，更新代码
-    os.system('sh deploy.sh')
+    os.system('sh ../deploy.sh')
     return jsonify({"status": 200})
 
 
