@@ -17,7 +17,7 @@ def encryption(data):
 import os
 
 
-@app.route('/hook', methods=['POST'])
+@app.route('/hook', methods=['POST','GET'])
 def post_data():
     """
     github加密是将post提交的data和WebHooks的secret通过hmac的sha1加密，放到HTTP headers的
