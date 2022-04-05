@@ -1,15 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <script src="https://unpkg.com/vue@next"></script>
-    <title>Title</title>
-    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
-    <div id="hello-vue" class="demo">
-        {{ message }}
-    </div>
+    <title>jQuery+ajax实现简单的上传图片功能</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-
+<div class="form-group">
+    <label>图片</label>
+    <img src=""  id="img_id" />
+    <input type="file" name="file" id="uploadImage" onchange="postData()">
+</div>
 </body>
+<script type="text/javascript">
+    function postData() {
+        var formData = new FormData();
+        formData.append("file", $("#uploadImage")[0].files[0]);
+        $.ajax({
+            url: basePath + "/img",
+            type: "post",
+            data: formData,
+            responseType: "blob",
+            processData: false, // 告诉jQuery不要去处理发送的数据
+            contentType: false, // 告诉jQuery不要去设置Content-Type请求头
+            success: function(data) {
+                var windowUrl = window.URL || window.webkitURL;
+                var blob = new Blob(this.response,{type:'image/png'});
+                var img = document.getElementById("img_id")
+                img.onload = function(e) {
+                    window.URL.revokeObjectURL(img.src); // 当图片加载完成后清除释放
+                };
+                img.src = windowUrl.createObjectURL(blob)
+                console.log("img success");
+            },
+            error: function(data) {
+                console.log(data)
+                console.log("img failed");
+            }
+        });
+    }
+    //赋值变量
+    var basePath = getContextPath();
+    // 获取项目路径
+    function getContextPath() {
+        return "http://127.0.0.1:8008"
+    }
+</script>
 </html>

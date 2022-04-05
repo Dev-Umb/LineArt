@@ -1,13 +1,12 @@
 import io
 import threading
-from datetime import date, datetime
-from multiprocessing.pool import ThreadPool
+from datetime import datetime
+from urllib.request import Request
 
-import cv2
 import numpy as np
 from PIL import Image, ImageFilter, ImageOps
 from sanic import Sanic
-from sanic.response import file_stream, raw, file, stream
+from sanic.response import raw, json, text, HTTPResponse
 
 app = Sanic("STapi")
 url = "http://127.0.0.1:8000/"
@@ -103,9 +102,42 @@ def img_filter(byte: bytes):
     return imgByteArray
 
 
+@app.middleware("request")
+def cors_middle_req(request: Request):
+    """路由需要启用OPTIONS方法"""
+    if request.method.lower() == 'options':
+        allow_headers = [
+            'Authorization',
+            'content-type'
+        ]
+        headers = {
+            'Access-Control-Allow-Methods':
+                ', '.join(request.app.router.get_supported_methods(request.path)),
+            'Access-Control-Max-Age': '86400',
+            'Access-Control-Allow-Headers': ', '.join(allow_headers),
+        }
+        return HTTPResponse('', headers=headers)
+
+
+@app.middleware("response")
+def cors_middle_res(request: Request, response: HTTPResponse):
+    """跨域处理"""
+    allow_origin = '*'
+    response.headers.update(
+        {
+            'Access-Control-Allow-Origin': allow_origin,
+        }
+    )
+
+
 '''
 下面为一个简易的服务器端，可快速部署图像处理服务
 '''
+
+
+@app.route("/hello", methods=['GET', 'POST'])
+async def he(request):
+    return text("hello world")
 
 
 @app.route("/img", methods=['GET', 'POST'])
