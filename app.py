@@ -134,7 +134,6 @@ def cors_middle_res(request: Request, response: HTTPResponse):
 下面为一个简易的服务器端，可快速部署图像处理服务
 '''
 
-
 @app.route("/hello", methods=['GET', 'POST'])
 async def he(request):
     return text("hello world")
