@@ -1,46 +1,66 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>jQuery+ajax实现简单的上传图片功能</title>
+    <title>LineArt</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
+
 <body>
-<div class="form-group">
-    <label>图片</label>
-    <img src=""  id="img_id" />
-    <input type="file" name="file" id="uploadImage" onchange="postData()">
+<div class="form-group" style="writing-mode:vertical-lr" align="center">
+    <input type="file" name="file" id="previewFile" onchange="selectImage(this)">
+    <div style="display: inline-block" align="center">
+        <img src=""  id="preview-image"  style="width:360px;height:240px;"/>
+        <img src=""  id="result-image"  style="width:360px;height:240px;"/>
+    </div>
+    <button name="uploadImage" onclick="postData()" >
+        <a>
+            上传
+        </a>
+    </button>
 </div>
 </body>
 <script type="text/javascript">
+    var data = "";
+    function selectImage(file) {
+        if (!file.files || !file.files[0]) {
+            return;
+        }
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+            document.getElementById('preview-image').src = evt.target.result;
+            image = evt.target.result;
+        }
+        data = file.files[0];
+        reader.readAsDataURL(file.files[0]);
+    }
     function postData() {
+        var xmlhttp;
+        xmlhttp=new XMLHttpRequest();
         var formData = new FormData();
-        formData.append("file", $("#uploadImage")[0].files[0]);
-        $.ajax({
-            url: basePath + "/img",
-            type: "post",
-            data: formData,
-            responseType: "blob",
-            processData: false, // 告诉jQuery不要去处理发送的数据
-            contentType: false, // 告诉jQuery不要去设置Content-Type请求头
-            success: function(data) {
-                var windowUrl = window.URL || window.webkitURL;
-                var blob = new Blob(this.response,{type:'image/png'});
-                var img = document.getElementById("img_id")
+        formData.append("file", data);
+        xmlhttp.open("POST",basePath+"/img",true);
+        xmlhttp.responseType = "blob";
+        xmlhttp.onload = function(){
+            console.log(this);
+            if (this.status == 200) {
+                var blob = this.response;
+                var img = document.getElementById("result-image");
                 img.onload = function(e) {
-                    window.URL.revokeObjectURL(img.src); // 当图片加载完成后清除释放
+                    window.URL.revokeObjectURL(img.src);
                 };
-                img.src = windowUrl.createObjectURL(blob)
-                console.log("img success");
-            },
-            error: function(data) {
-                console.log(data)
-                console.log("img failed");
+                img.src = window.URL.createObjectURL(blob);
             }
-        });
+        }
+        xmlhttp.send(formData);
+
+    }
+    function loadImage_file(blob){
+        var fr=new FileReader();
+        fr.readAsDataURL(blob);
+        fr.onload=function(e){
+            var preview=document.getElementById('result-image');
+            preview.src=e.target.result;
+        }
     }
     //赋值变量
     var basePath = getContextPath();
