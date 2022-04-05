@@ -6,13 +6,13 @@
 </head>
 
 <body>
-<div class="form-group" style="writing-mode:vertical-lr" align="center">
-    <input type="file" name="file" id="previewFile" onchange="selectImage(this)">
+<div class="form-group" style="writing-mode:vertical-lr;align-content: center">
+    <input type="file" name="file" id="previewFile" onchange="selectImage(this)" style="align:center">
     <div style="display: inline-block" align="center">
-        <img src=""  id="preview-image"  style="width:360px;height:240px;"/>
-        <img src=""  id="result-image"  style="width:360px;height:240px;"/>
+        <img src="https://i.loli.net/2021/04/12/wpBqePcGD8OmKxr.jpg"  id="preview-image"  style="width:360px;height:240px;"/>
+        <img src="https://i.loli.net/2021/04/12/EZjAFvkiQNt5pCT.png"  id="result-image"  style="width:360px;height:240px;"/>
     </div>
-    <button name="uploadImage" onclick="postData()" >
+    <button name="uploadImage" onclick="postData()" style="align:center;">
         <a>
             上传
         </a>
@@ -54,19 +54,11 @@
         xmlhttp.send(formData);
 
     }
-    function loadImage_file(blob){
-        var fr=new FileReader();
-        fr.readAsDataURL(blob);
-        fr.onload=function(e){
-            var preview=document.getElementById('result-image');
-            preview.src=e.target.result;
-        }
-    }
     //赋值变量
     var basePath = getContextPath();
     // 获取项目路径
     function getContextPath() {
-        return "http://127.0.0.1:8008"
+        return "https://service.umb.ink/art/"
     }
 </script>
 </html>
